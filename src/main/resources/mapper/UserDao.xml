@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--namespace:关联的dao接口的命名空间-->
+<mapper namespace="com.aishang.dao.UserDao">
+    <!--select:查询语句 id:接口的方法名  resultType:返回值类型-->
+    <select id="getAllUsers" resultType="User">
+        select * from user
+    </select>
+    <!--校验用户名是否重复-->
+    <!--parameterType：参数类型-->
+    <select id="checkUserName" parameterType="String" resultType="Integer">
+        select count(0) from user where username=#{userName}
+    </select>
+
+   <!-- 添加用户-->
+    <insert id="addUser" parameterType="User">
+        insert into user values(default,#{userName},#{passWord},#{name},#{email},#{phone},#{addr},#{state},#{code})
+    </insert>
+
+    <!--登录-->
+    <select id="" parameterType="User" resultType="User">
+        select * from user where username=#{userName} and password=#{passWord}
+    </select>
+    <!--修改-->
+    <update id="dao接口方法名" parameterType="User">
+
+        update user set name=#{name},username=#{userName}... where uid=#{uid}
+    </update>
+</mapper>

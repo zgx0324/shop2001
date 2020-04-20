@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.aishang.dao.OrderDao">
+
+    <!--添加订单-->
+    <insert id="addOrder" parameterType="Order">
+        <!--查询上一条添加的记录主键  order:在insert语句之前执行，还是之后
+            keyColumn:数据库中字段  keyProperty-->
+        <selectKey order="AFTER" resultType="Integer" keyColumn="oid" keyProperty="oid">
+            select last_insert_id()
+        </selectKey>
+        insert into orders values(default ,#{total},#{orderTime},#{state},#{name},#{phone},#{addr},#{uid})
+    </insert>
+
+   <!-- 添加订单项-->
+    <insert id="addOrderItem" parameterType="OrderItem">
+        insert into orderitem values(default,#{count},#{subTotal},#{pid},#{oid})
+    </insert>
+
+   <!-- 修改订单状态-->
+    <update id="changeOrderState" parameterType="Order">
+        update orders set state=#{state} where oid=#{oid}
+    </update>
+
+    <!--查询订单详情-->
+    <select id="getOrderDetail" parameterType="Order" resultMap="orderMap">
+        select * from orders
+        inner join orderitem
+        on orders.oid=orderitem.oid
+        inner join product
+        on orderitem.pid=product.pid
+        where orders.oid=#{oid}
+    </select>
+
+    <resultMap id="orderMap" type="OrderExt">
+        <id column="oid" property="oid"></id>
+        <result column="total" property="total"></result>
+        <result column="ordertime" property="orderTime"></result>
+        <result column="state" property="state"></result>
+        <result column="name" property="name"></result>
+        <result column="phone" property="phone"></result>
+        <result column="addr" property="addr"></result>
+        <result column="uid" property="uid"></result>
+        <!--一对多  订单对应多个订单项-->
+        <collection property="orderItemExts" ofType="OrderItemExt">
+            <id column="itemid" property="itemId"></id>
+            <result column="count" property="count"></result>
+            <result column="subtotal" property="subTotal"></result>
+            <result column="pid" property="pid"></result>
+            <result column="oid" property="oid"></result>
+            <!--一对一 一个订单项对应一个商品-->
+            <association property="product" javaType="Product">
+                <id column="pid" property="pid"></id>
+                <result column="pname" property="pName"></result>
+                <result column="market_price" property="marketPrice"></result>
+                <result column="shop_price" property="shopPrice"></result>
+                <result column="image" property="image"></result>
+                <result column="pdesc" property="pDesc"></result>
+                <result column="is_hot" property="isHot"></result>
+                <result column="pdate" property="pDate"></result>
+                <result column="csid" property="csid"></result>
+            </association>
+        </collection>
+    </resultMap>
+</mapper>
